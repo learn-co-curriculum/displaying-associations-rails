@@ -1,4 +1,3 @@
-
 # Displaying Associations Rails
 
 ## Objectives
@@ -25,7 +24,9 @@ Displaying Associated Data
 Setup a Post belongs to a Category and a Category has many posts.
 RESTful controllers for both resources are available
 
-The README should address building out the Post#show view to display a link_to the category#show and the name of the category. That will require using the belongs to method. To do this walk the user through creating the development data from console (even perhaps seeds?).
+The README should address building out the Post#show view to display a link_to the category#show and the name of the category. That will require using the belongs to method.
+
+To do this walk the user through creating the development data from console (even perhaps seeds?). However because we're going to provide them with a few CRUD RESTful controllers they can also create the seed data view the web interface.
 
 Once the post#show is displaying the association data. move onto to displaying the links to each post for a category. show them how to give multiple posts for a category in console/seeds.
 
