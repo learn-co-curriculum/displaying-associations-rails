@@ -31,3 +31,5 @@ To do this walk the user through creating the development data from console (eve
 Once the post#show is displaying the association data. move onto to displaying the links to each post for a category. show them how to give multiple posts for a category in console/seeds.
 
 standard @category.posts iteration. show the similarity of this loop on posts#index (as in, iterating through a collection of instances is no different if those objects are loaded through an association or thorugh a AR query. That's infact the similarty of a ActiveRecord::CollectionProxy object).
+
+<a href='https://learn.co/lessons/displaying-associations-rails' data-visibility='hidden'>View this lesson on Learn.co</a>
