@@ -2,34 +2,153 @@
 
 ## Objectives
 
-Students will be able to:
+After this lesson, you should be able to...
 
-1. Create a has_many and belongs to association.
-2. Build associated data through console (or perhaps seeds).
+1. Create a `has_many` and `belongs_to` association.
+2. Build associated data through the console and `db/seeds.rb`.
 3. Query for associated data using methods provided by association.
 4. Embed association data within views.
 5. Iterate over associated data within a view displaying individual instances.
 
-## Notes
+# Blog Categories
 
-Displaying Associated Data
-  give posts a category
-  category/post resource
-  Create a category
-  Create a post
-  assign a post a category in console
-  display the post category in posts#show
-  list the posts in a category in category#show
+In this lesson, we'll be setting up a blog admin panel so that Posts can be
+created, associated with Categories, and listed by category.
 
-Setup a Post belongs to a Category and a Category has many posts.
-RESTful controllers for both resources are available
+# The Models
 
-The README should address building out the Post#show view to display a link_to the category#show and the name of the category. That will require using the belongs to method.
+First, we'll set up associated models, just like in the preceding lesson:
 
-To do this walk the user through creating the development data from console (even perhaps seeds?). However because we're going to provide them with a few CRUD RESTful controllers they can also create the seed data view the web interface.
+```ruby
+# app/models/post.rb
 
-Once the post#show is displaying the association data. move onto to displaying the links to each post for a category. show them how to give multiple posts for a category in console/seeds.
+class Post < ActiveRecord::Base
+  belongs_to :category
+end
+```
 
-standard @category.posts iteration. show the similarity of this loop on posts#index (as in, iterating through a collection of instances is no different if those objects are loaded through an association or thorugh a AR query. That's infact the similarty of a ActiveRecord::CollectionProxy object).
+```ruby
+# app/models/category.rb
 
-<a href='https://learn.co/lessons/displaying-associations-rails' data-visibility='hidden'>View this lesson on Learn.co</a>
+class Category < ActiveRecord::Base
+  has_many :posts
+end
+```
+
+# Seed Data
+
+Now, to make development more convenient, we'll use `db/seeds.rb` to create some
+basic data that will let us see meaningful information on our views without
+having re-create everything from scratch whenever we decide to make a schema
+change.
+
+```ruby
+# db/seeds.rb
+
+clickbait = Category.create!(name: "Motivation")
+clickbait.posts.create!(title: "10 Ways You Are Already Awesome")
+clickbait.posts.create!(title: "This Yoga Stretch Cures Procrastination, Maybe")
+clickbait.posts.create!(title: "The Power of Positive Thinking and 100 Gallons of Coffee")
+
+movies = Category.create!(name: "Movies")
+movies.posts.create!(title: "Top 20 Summer Blockbusters Featuring a Cute Dog")
+```
+
+To run the seed file in the development environment, you can activate the rake
+task:
+
+```
+bundle exec rake db:seeds
+```
+
+If you want to play around with the data, of course, it's always possible to
+take the create statements exactly as written above and type them into `rails
+console`.
+
+# The Views
+
+## Posts
+
+When viewing a single post, we'll want to have a link to its category available.
+
+```erb
+<%# app/views/posts/show.html.erb %>
+
+<h2><%= @post.title %></h2>
+Category: <%= link_to @post.category, category_path(@post.category) %>
+<p><%= @post.content %></p>
+```
+
+`@post.category` is the `Category` model itself, so we can use it anywhere we
+would use `@category` on a view for that object.
+
+## Categories
+
+In this domain, the primary use of a category is as a bucket for posts. So we'll
+definitely have to make heavy use of associations when designing the view.
+
+```erb
+<%# app/views/categories/show.html.erb %>
+
+<h2><%= @category.name %></h2>
+<%= @category.posts.count %> post(s):
+<ul>
+  <% @category.posts.each do |post| %>
+    <li><%= link_to post.title, post_path(post) %></li>
+  <% end %>
+</ul>
+```
+
+The object returned by an association method is a
+[CollectionProxy][collection_proxy], and it responds to most of the methods you
+can use on ActiveRecord classes, such as `count`.
+
+If we open up `rails console`, we can confirm that the `count` results are
+accurate:
+
+```ruby
+Post.count
+#=> 4
+clickbait = Category.find_by(name: "Clickbait")
+#=> #<Category id=1>
+clickbait.posts.count
+#=> 3
+```
+
+Meanwhile, for listing a category's posts, we write a loop very similar to the
+loops we've been writing on `index` actions, which makes sense, since a category
+is essentially an index for its posts. Let's compare them side-by-side:
+
+```erb
+<%# app/views/categories/show.html.erb %>
+
+<% @category.posts.each do |post| %>
+  <li><%= link_to post.title, post_path(post) %></li>
+<% end %>
+```
+
+Versus:
+
+```erb
+<%# app/views/posts/index.html.erb %>
+
+<% @posts.each do |post| %>
+  <li><%= link_to post.title, post_path(post) %></li>
+<% end %>
+```
+
+In fact, the only difference is what we call `each` on.
+
+
+# Recap
+
+With ActiveRecord's powerful association macros and instance methods, we can
+treat related models exactly the same as we treat directly-accessed models. As
+long as the database and classes are set up correctly, ActiveRecord will figure
+the rest out for us!
+
+[collection_proxy]: http://edgeapi.rubyonrails.org/classes/ActiveRecord/Associations/CollectionProxy.html
+
+
+<a href='https://learn.co/lessons/displaying-associations-rails'
+data-visibility='hidden'>View this lesson on Learn.co</a>
