@@ -65,7 +65,7 @@ If you want to play around with the data, of course, it's always possible to tak
 When viewing a single post, we'll want to have a link to its category available.
 
 ```erb
-<%# app/views/posts/show.html.erb %>
+ <!-- app/views/posts/show.html.erb -->
 
 <h2><%= @post.title %></h2>
 Category: <%= link_to @post.category.name, category_path(@post.category) %>
@@ -136,3 +136,5 @@ With ActiveRecord's powerful association macros and instance methods, we can tre
 
 
 <p data-visibility='hidden'>View <a href='https://learn.co/lessons/displaying-associations-rails'>Displaying Associations Data</a> on Learn.co and start learning to code for free.</p>
+
+<p class='util--hide'>View <a href='https://learn.co/lessons/displaying-associations-rails'>Displaying Associations Data</a> on Learn.co and start learning to code for free.</p>
